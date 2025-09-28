@@ -1,5 +1,5 @@
-import { createWriteStream, existsSync, mkdirSync } from "node:fs";
-import { pipeline } from "node:stream/promises";
+import { existsSync, mkdirSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 
 const IMAGES_PER_PROJECT = 3;
@@ -24,7 +24,8 @@ async function downloadImage(url: string, filename: string) {
       }
 
       const destinationPath = join(DESTINATION_DIR, filename);
-      await pipeline(response.body, createWriteStream(destinationPath));
+      const arrayBuffer = await response.arrayBuffer();
+      await writeFile(destinationPath, Buffer.from(arrayBuffer));
       return destinationPath;
     } catch (error) {
       lastError = error as Error;
