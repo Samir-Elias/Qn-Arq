@@ -14,7 +14,7 @@ type ProjectModalProps = {
 };
 
 const WHATSAPP_NUMBER =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "5492611234567";
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "5492614666991";
 
 export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
