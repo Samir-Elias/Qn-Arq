@@ -2,21 +2,29 @@ import { createClient } from "@/lib/supabase/server";
 import type { ProjectImage, ProjectWithImages } from "@/lib/types";
 
 export async function getProjects(): Promise<ProjectWithImages[]> {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from("projects")
-    .select(
+    const { data, error } = await supabase
+      .from("projects")
+      .select(
+        `
+        *,
+        images:project_images(*)
       `
-      *,
-      images:project_images(*)
-    `
-    )
-    .order("created_at", { ascending: false });
+      )
+      .order("created_at", { ascending: false });
 
-  if (error) throw error;
+    if (error) {
+      console.error("Error fetching projects:", error.message);
+      return [];
+    }
 
-  return (data ?? []).map(mapProjectWithImages);
+    return (data ?? []).map(mapProjectWithImages);
+  } catch (err) {
+    console.error("Failed to connect to Supabase:", err);
+    return [];
+  }
 }
 
 export async function getProject(
