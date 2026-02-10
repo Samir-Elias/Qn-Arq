@@ -110,7 +110,7 @@ export function HomeContent({
         </motion.header>
 
         <motion.div
-          className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4"
+          className="grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 min-[480px]:gap-3 sm:grid-cols-3 sm:gap-4"
           variants={STAGGER_CONTAINER}
           initial="hidden"
           whileInView="visible"
