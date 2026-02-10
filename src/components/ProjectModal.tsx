@@ -4,34 +4,65 @@ import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useState } from "react";
-import type { Project } from "@/data/projectsData";
+import type { ProjectWithImages } from "@/lib/types";
+import { useTrackClick } from "@/hooks/useTrackClick";
 
 type ProjectModalProps = {
-  project: Project | null;
+  project: ProjectWithImages | null;
   isOpen: boolean;
   onClose: () => void;
 };
 
-const WHATSAPP_NUMBER = "5492611234567";
+const WHATSAPP_NUMBER =
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "5492611234567";
 
 export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const { trackWhatsAppClick } = useTrackClick();
 
   if (!project) {
     return null;
   }
 
-  const images = project.images.length ? project.images : ["/projects/placeholder.jpg"];
+  // Todas las imagenes ordenadas por display_order
+  const allImages =
+    project.images.length > 0
+      ? project.images
+      : [
+          {
+            id: "placeholder",
+            url: "/projects/placeholder.jpg",
+            project_id: "",
+            storage_path: "",
+            display_order: 0,
+            is_main: false,
+            created_at: "",
+          },
+        ];
+
+  const activeImage = allImages[activeImageIndex] ?? allImages[0];
+
   const whatsappMessage = encodeURIComponent(
-    `Hola, te hablo por el proyecto ${project.id}. Estoy interesado y te hablo de parte de Samir.`
+    `Hola, te hablo por el proyecto "${project.title}". Estoy interesado y te hablo de parte de Samir.`
   );
 
+  const handleWhatsAppClick = async () => {
+    await trackWhatsAppClick(project.id);
+    window.open(
+      `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
+
   const handlePrevious = () => {
-    setActiveImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    setActiveImageIndex(
+      (prev) => (prev - 1 + allImages.length) % allImages.length
+    );
   };
 
   const handleNext = () => {
-    setActiveImageIndex((prev) => (prev + 1) % images.length);
+    setActiveImageIndex((prev) => (prev + 1) % allImages.length);
   };
 
   return (
@@ -59,15 +90,15 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
             <DialogPanel className="overflow-hidden rounded-3xl bg-white shadow-2xl">
               <div className="relative aspect-[4/3] w-full bg-black">
                 <Image
-                  src={images[activeImageIndex]}
+                  src={activeImage.url}
                   alt={`${project.title} imagen ${activeImageIndex + 1}`}
                   fill
                   className="object-cover"
                   sizes="(min-width: 768px) 50vw, 100vw"
                 />
-                {images.length > 1 ? (
+                {allImages.length > 1 ? (
                   <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center gap-2 pb-4">
-                    {images.map((_, index) => (
+                    {allImages.map((_, index) => (
                       <span
                         key={index}
                         className={`h-2 w-8 rounded-full transition ${
@@ -79,27 +110,27 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
                     ))}
                   </div>
                 ) : null}
-                {images.length > 1 ? (
-                  <div className="absolute inset-y-0 left-0 flex items-center">
-                    <button
-                      type="button"
-                      onClick={handlePrevious}
-                      className="pointer-events-auto h-10 w-10 -translate-x-4 rounded-full bg-white/80 text-black shadow-md transition hover:bg-white"
-                    >
-                      ◀
-                    </button>
-                  </div>
-                ) : null}
-                {images.length > 1 ? (
-                  <div className="absolute inset-y-0 right-0 flex items-center">
-                    <button
-                      type="button"
-                      onClick={handleNext}
-                      className="pointer-events-auto h-10 w-10 translate-x-4 rounded-full bg-white/80 text-black shadow-md transition hover:bg-white"
-                    >
-                      ▶
-                    </button>
-                  </div>
+                {allImages.length > 1 ? (
+                  <>
+                    <div className="absolute inset-y-0 left-0 flex items-center">
+                      <button
+                        type="button"
+                        onClick={handlePrevious}
+                        className="pointer-events-auto h-10 w-10 -translate-x-4 rounded-full bg-white/80 text-black shadow-md transition hover:bg-white"
+                      >
+                        ◀
+                      </button>
+                    </div>
+                    <div className="absolute inset-y-0 right-0 flex items-center">
+                      <button
+                        type="button"
+                        onClick={handleNext}
+                        className="pointer-events-auto h-10 w-10 translate-x-4 rounded-full bg-white/80 text-black shadow-md transition hover:bg-white"
+                      >
+                        ▶
+                      </button>
+                    </div>
+                  </>
                 ) : null}
               </div>
               <div className="space-y-4 p-6">
@@ -116,13 +147,15 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
                     ✕
                   </button>
                 </div>
-                <p className="text-sm text-black/70 leading-relaxed">
+                <p className="text-sm leading-relaxed text-black/70">
                   {project.description}
                 </p>
+
+                {/* Thumbnails */}
                 <div className="flex flex-wrap gap-2">
-                  {images.map((image, index) => (
+                  {allImages.map((image, index) => (
                     <button
-                      key={image}
+                      key={image.id}
                       type="button"
                       onClick={() => setActiveImageIndex(index)}
                       className={`relative h-16 w-20 overflow-hidden rounded-xl border transition ${
@@ -132,7 +165,7 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
                       }`}
                     >
                       <Image
-                        src={image}
+                        src={image.url}
                         alt={`${project.title} miniatura ${index + 1}`}
                         fill
                         className="object-cover"
@@ -141,14 +174,14 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
                     </button>
                   ))}
                 </div>
-                <a
-                  href={`https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+
+                <button
+                  type="button"
+                  onClick={handleWhatsAppClick}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-400"
                 >
                   Contactar por WhatsApp
-                </a>
+                </button>
               </div>
             </DialogPanel>
           </motion.div>
@@ -157,4 +190,3 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
     </AnimatePresence>
   );
 }
-

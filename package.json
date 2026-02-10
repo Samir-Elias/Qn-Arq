@@ -7,10 +7,13 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "seed:images": "tsx scripts/download-dummy-images.ts"
+    "seed:images": "tsx scripts/download-arch-images.ts",
+    "seed:supabase": "tsx scripts/seed-supabase.ts"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.95.3",
     "framer-motion": "^12.23.22",
     "next": "15.5.4",
     "react": "19.1.0",
