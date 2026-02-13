@@ -147,7 +147,7 @@ export function HomeContent({
         </motion.header>
 
         {/* Tab bar */}
-        <div className="mb-5 flex gap-6 overflow-x-auto border-b border-[var(--border)] scrollbar-none">
+        <div className="mb-5 flex gap-6 overflow-x-auto overflow-y-hidden border-b border-[var(--border)] scrollbar-none">
           {availableCategories.map((cat) => {
             const isActive = cat === activeCategory;
             const count = categorizedProjects.get(cat)?.length ?? 0;
@@ -156,7 +156,7 @@ export function HomeContent({
                 key={cat}
                 type="button"
                 onClick={() => setActiveCategory(cat)}
-                className={`relative shrink-0 pb-3 text-sm font-medium transition-colors ${
+                className={`relative shrink-0 !p-0 !pb-3 text-sm font-medium transition-colors ${
                   isActive
                     ? "text-[var(--foreground)]"
                     : "text-[var(--muted)] hover:text-[var(--foreground)]"

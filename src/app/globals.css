@@ -53,6 +53,21 @@ button {
   background-size: 1000px 100%;
 }
 
+/* Lock scroll during splash animation */
+html.splash-active {
+  overflow: hidden;
+}
+
+/* iOS safe area support for standalone mode */
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
 /* Touch-friendly targets for mobile */
 @media (pointer: coarse) {
   .touch-target {
