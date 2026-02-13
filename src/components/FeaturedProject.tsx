@@ -26,9 +26,10 @@ export function FeaturedProject({ project, onOpen }: FeaturedProjectProps) {
       ref={containerRef}
       className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-black via-zinc-900 to-zinc-800 text-white"
     >
-      <button
+      <motion.button
         type="button"
         onClick={() => onOpen(project)}
+        whileTap={{ scale: 0.99 }}
         className="group grid h-full w-full gap-6 p-6 text-left sm:grid-cols-[2fr_3fr] sm:p-8"
       >
         <motion.div
@@ -39,6 +40,7 @@ export function FeaturedProject({ project, onOpen }: FeaturedProjectProps) {
             src={cover}
             alt={project.title}
             fill
+            priority
             className="object-cover transition duration-500 group-hover:scale-105"
             sizes="(min-width: 640px) 40vw, 100vw"
           />
@@ -84,7 +86,7 @@ export function FeaturedProject({ project, onOpen }: FeaturedProjectProps) {
             ) : null}
           </div>
         </motion.div>
-      </button>
+      </motion.button>
     </motion.article>
   );
 }

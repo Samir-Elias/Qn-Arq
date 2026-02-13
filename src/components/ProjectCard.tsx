@@ -14,6 +14,17 @@ type ProjectCardProps = {
 export function ProjectCard({ project, onClick }: ProjectCardProps) {
   const cover = project.main_image?.url ?? "/projects/placeholder.jpg";
 
+  // Prefetch images on hover for instant perceived loading
+  const handleMouseEnter = () => {
+    project.images.forEach((img) => {
+      const link = document.createElement("link");
+      link.rel = "prefetch";
+      link.as = "image";
+      link.href = img.url;
+      document.head.appendChild(link);
+    });
+  };
+
   return (
     <motion.button
       type="button"
@@ -22,6 +33,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => onClick(project)}
+      onMouseEnter={handleMouseEnter}
       className="group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-black/10 bg-white text-left shadow-sm transition-shadow hover:shadow-lg"
     >
       <div className="relative aspect-[3/2] w-full overflow-hidden min-[480px]:aspect-[4/5]">

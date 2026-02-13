@@ -1,7 +1,18 @@
+export const PROJECT_CATEGORIES = [
+  "Departamentos",
+  "Duplex",
+  "Casas",
+  "Planos",
+  "Otros",
+] as const;
+
+export type ProjectCategory = (typeof PROJECT_CATEGORIES)[number];
+
 export type Project = {
   id: string;
   title: string;
   description: string;
+  category: ProjectCategory;
   featured: boolean;
   created_at: string;
   updated_at: string;

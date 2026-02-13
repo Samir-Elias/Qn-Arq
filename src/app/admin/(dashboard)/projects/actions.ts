@@ -9,6 +9,7 @@ export async function createProject(formData: FormData) {
 
   const title = formData.get("title") as string;
   const description = formData.get("description") as string;
+  const category = (formData.get("category") as string) || "Otros";
   const featured = formData.get("featured") === "true";
 
   if (!title?.trim()) {
@@ -25,7 +26,7 @@ export async function createProject(formData: FormData) {
 
   const { data: project, error } = await supabase
     .from("projects")
-    .insert({ title: title.trim(), description: description?.trim() ?? "", featured })
+    .insert({ title: title.trim(), description: description?.trim() ?? "", category, featured })
     .select()
     .single();
 
@@ -41,6 +42,7 @@ export async function updateProject(id: string, formData: FormData) {
 
   const title = formData.get("title") as string;
   const description = formData.get("description") as string;
+  const category = (formData.get("category") as string) || "Otros";
   const featured = formData.get("featured") === "true";
 
   if (!title?.trim()) {
@@ -61,6 +63,7 @@ export async function updateProject(id: string, formData: FormData) {
     .update({
       title: title.trim(),
       description: description?.trim() ?? "",
+      category,
       featured,
     })
     .eq("id", id);

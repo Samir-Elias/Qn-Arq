@@ -1,19 +1,21 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useMemo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { ProjectWithImages } from "@/lib/types";
+import { PROJECT_CATEGORIES } from "@/lib/types";
 import { FeaturedProject } from "@/components/FeaturedProject";
-import { ProjectCard } from "@/components/ProjectCard";
+import { CategorySection } from "@/components/CategorySection";
 import { ProjectModal } from "@/components/ProjectModal";
 import {
   HERO_CONTAINER,
   HERO_ITEM,
   FEATURED_REVEAL,
   SCROLL_REVEAL_TRANSITION,
-  STAGGER_CONTAINER,
   HEADER_REVEAL_VARIANTS,
   VIEWPORT_CONFIG_HEADER,
+  SECTION_REVEAL_VARIANTS,
+  VIEWPORT_CONFIG,
 } from "@/lib/animations";
 
 type HomeContentProps = {
@@ -32,6 +34,34 @@ export function HomeContent({
   const [isModalOpen, setModalOpen] = useState(false);
   const prefersReducedMotion = useReducedMotion();
 
+  // Group projects by category, maintaining fixed order
+  // Projects without a category (migration not yet run) fall into "Otros"
+  const categorizedProjects = useMemo(() => {
+    const grouped = new Map<string, ProjectWithImages[]>();
+    for (const cat of PROJECT_CATEGORIES) {
+      const catProjects = projects.filter(
+        (p) => (p.category || "Otros") === cat
+      );
+      if (catProjects.length > 0) {
+        grouped.set(cat, catProjects);
+      }
+    }
+    return grouped;
+  }, [projects]);
+
+  // First category with projects starts expanded
+  const firstCategory = categorizedProjects.keys().next().value;
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set<string>()
+  );
+
+  // Ensure first category is always expanded (even on first render)
+  const effectiveExpanded = useMemo(() => {
+    const set = new Set(expandedCategories);
+    if (firstCategory) set.add(firstCategory);
+    return set;
+  }, [expandedCategories, firstCategory]);
+
   const transition = prefersReducedMotion
     ? { duration: 0 }
     : SCROLL_REVEAL_TRANSITION;
@@ -46,10 +76,22 @@ export function HomeContent({
     setTimeout(() => setSelectedProject(null), 200);
   };
 
+  const toggleCategory = (category: string) => {
+    setExpandedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(category)) {
+        next.delete(category);
+      } else {
+        next.add(category);
+      }
+      return next;
+    });
+  };
+
   return (
-    <main className="px-4 pb-16 sm:px-6 lg:px-12">
+    <main className="px-4 pb-24 sm:px-6 lg:px-12">
       {/* Hero */}
-      <section className="pb-16 pt-16 sm:pt-20 lg:pt-24">
+      <section className="pb-20 pt-16 sm:pt-20 lg:pt-28">
         <motion.div
           className="mx-auto max-w-3xl space-y-5 text-center"
           variants={HERO_CONTAINER}
@@ -80,7 +122,7 @@ export function HomeContent({
 
         {featured ? (
           <motion.div
-            className="mt-10 sm:mt-14"
+            className="mt-12 sm:mt-16"
             variants={FEATURED_REVEAL}
             initial="hidden"
             animate="visible"
@@ -91,39 +133,45 @@ export function HomeContent({
       </section>
 
       {/* Separador */}
-      <div className="mx-auto mb-12 h-px w-16 bg-[var(--border)]" />
+      <motion.div
+        className="mx-auto mb-16 h-px w-24 bg-gradient-to-r from-transparent via-[var(--border)] to-transparent"
+        variants={SECTION_REVEAL_VARIANTS}
+        initial="hidden"
+        whileInView="visible"
+        viewport={VIEWPORT_CONFIG}
+        transition={transition}
+      />
 
-      {/* Proyectos */}
-      <section className="space-y-5">
+      {/* Proyectos por categoría */}
+      <section>
         <motion.header
-          className="flex items-center justify-between"
+          className="mb-6 flex items-center justify-between"
           variants={HEADER_REVEAL_VARIANTS}
           initial="hidden"
           whileInView="visible"
           viewport={VIEWPORT_CONFIG_HEADER}
           transition={transition}
         >
-          <h2 className="text-xl font-semibold">Todos los proyectos</h2>
+          <h2 className="text-xl font-semibold">Proyectos</h2>
           <span className="text-sm text-[var(--muted)]">
-            {totalCount} proyectos realizados
+            {totalCount} realizados
           </span>
         </motion.header>
 
-        <motion.div
-          className="grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 min-[480px]:gap-3 sm:grid-cols-3 sm:gap-4"
-          variants={STAGGER_CONTAINER}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
-        >
-          {projects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onClick={handleOpenProject}
-            />
-          ))}
-        </motion.div>
+        <div className="rounded-2xl border border-[var(--border)] bg-white px-5 sm:px-6">
+          {Array.from(categorizedProjects.entries()).map(
+            ([category, catProjects]) => (
+              <CategorySection
+                key={category}
+                category={category}
+                projects={catProjects}
+                isExpanded={effectiveExpanded.has(category)}
+                onToggle={() => toggleCategory(category)}
+                onProjectClick={handleOpenProject}
+              />
+            )
+          )}
+        </div>
       </section>
 
       <Suspense>

@@ -10,6 +10,7 @@ export default async function AdminDashboardPage() {
       `
       id,
       title,
+      category,
       featured,
       created_at,
       images:project_images(count),
@@ -56,6 +57,11 @@ export default async function AdminDashboardPage() {
                     {project.featured ? (
                       <span className="shrink-0 rounded-full bg-black px-2 py-0.5 text-[10px] font-medium text-white">
                         Destacado
+                      </span>
+                    ) : null}
+                    {project.category && project.category !== "Otros" ? (
+                      <span className="shrink-0 rounded-full bg-zinc-200 px-2 py-0.5 text-[10px] font-medium text-zinc-700">
+                        {project.category}
                       </span>
                     ) : null}
                   </div>

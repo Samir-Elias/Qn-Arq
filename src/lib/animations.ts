@@ -67,6 +67,27 @@ export const SCROLL_REVEAL_TRANSITION: Transition = {
   ease: EASE_OUT_EXPO,
 };
 
+// Section reveal — for additional sections throughout the page
+export const SECTION_REVEAL_VARIANTS: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 40,
+    clipPath: "inset(0 0 100% 0)",
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    clipPath: "inset(0 0 0% 0)",
+    transition: {
+      duration: 0.8,
+      ease: EASE_OUT_EXPO,
+    },
+  },
+};
+
 // Viewport trigger configs
 export const VIEWPORT_CONFIG = { once: true, amount: 0.2 } as const;
 export const VIEWPORT_CONFIG_HEADER = { once: true, amount: 0.5 } as const;
+
+// Export EASE_OUT_EXPO for reuse
+export { EASE_OUT_EXPO };

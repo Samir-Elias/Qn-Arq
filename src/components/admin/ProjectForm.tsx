@@ -7,7 +7,7 @@ import {
   updateProject,
   deleteProject,
 } from "@/app/admin/(dashboard)/projects/actions";
-import type { ProjectWithImages } from "@/lib/types";
+import { type ProjectWithImages, PROJECT_CATEGORIES } from "@/lib/types";
 
 type ProjectFormProps = {
   project?: ProjectWithImages;
@@ -84,6 +84,24 @@ export function ProjectForm({ project }: ProjectFormProps) {
           placeholder="Descripción del proyecto..."
           className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm focus:border-black focus:outline-none focus:ring-2 focus:ring-black/10"
         />
+      </div>
+
+      <div className="space-y-1">
+        <label htmlFor="category" className="text-sm font-medium">
+          Tipo de proyecto
+        </label>
+        <select
+          id="category"
+          name="category"
+          defaultValue={project?.category ?? "Otros"}
+          className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm focus:border-black focus:outline-none focus:ring-2 focus:ring-black/10"
+        >
+          {PROJECT_CATEGORIES.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="flex items-center gap-2">

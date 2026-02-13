@@ -7,6 +7,10 @@
   --border: #e4e4e4;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   min-height: 100vh;
   display: flex;
@@ -14,7 +18,10 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-poppins, "Poppins", system-ui, -apple-system, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
 
 a,
 button {
@@ -27,4 +34,32 @@ button {
 
 .border-subtle {
   border-color: var(--border);
+}
+
+/* Shimmer animation for loading states */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background-size: 1000px 100%;
+}
+
+/* Touch-friendly targets for mobile */
+@media (pointer: coarse) {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  button,
+  a[role="button"] {
+    padding: 12px 20px;
+  }
 }

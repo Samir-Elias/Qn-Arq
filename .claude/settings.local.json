@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npm install:*)",
       "Bash(npm run build:*)",
-      "Bash(winget install:*)"
+      "Bash(winget install:*)",
+      "Bash(git -C \"F:\\\\Programacion\\\\qn-arq-app\" log --oneline --all)",
+      "Bash(npx next build:*)"
     ]
   }
 }
