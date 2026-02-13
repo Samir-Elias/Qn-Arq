@@ -50,7 +50,7 @@ export function FeaturedProject({ project, onOpen }: FeaturedProjectProps) {
           style={{ y: textY }}
         >
           <header className="space-y-3">
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-white/80">
+            <span className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)]/20 px-3 py-1 text-xs uppercase tracking-[0.2em] text-[var(--accent)]">
               Proyecto destacado
             </span>
             <h2 className="text-3xl font-semibold sm:text-4xl">

@@ -30,30 +30,34 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
       type="button"
       variants={CARD_REVEAL_VARIANTS}
       transition={SCROLL_REVEAL_TRANSITION}
-      whileHover={{ y: -4 }}
+      whileHover={{ y: -3 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => onClick(project)}
       onMouseEnter={handleMouseEnter}
-      className="group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-black/10 bg-white text-left shadow-sm transition-shadow hover:shadow-lg"
+      className="group relative w-full overflow-hidden rounded-2xl bg-black text-left"
     >
-      <div className="relative aspect-[3/2] w-full overflow-hidden min-[480px]:aspect-[4/5]">
-        <div className="absolute inset-0">
-          <Image
-            src={cover}
-            alt={project.title}
-            fill
-            className="object-cover transition duration-500 group-hover:scale-105"
-            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 33vw, (min-width: 480px) 50vw, 100vw"
-          />
-        </div>
+      {/* Image fills the card — 16:10 on mobile, 4:3 on desktop */}
+      <div className="relative aspect-[16/10] w-full overflow-hidden sm:aspect-[4/3]">
+        <Image
+          src={cover}
+          alt={project.title}
+          fill
+          className="object-cover transition duration-500 group-hover:scale-105"
+          sizes="(min-width: 640px) 33vw, 100vw"
+        />
+        {/* Gradient overlay for text legibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
       </div>
-      <div className="flex flex-1 flex-col gap-1.5 p-3 min-[480px]:gap-2 min-[480px]:p-4">
-        <h3 className="line-clamp-2 text-sm font-semibold text-black min-[480px]:text-base">
+      {/* Text over the image at bottom */}
+      <div className="absolute inset-x-0 bottom-0 p-4 sm:p-3">
+        <h3 className="line-clamp-2 text-base font-semibold text-white sm:text-sm">
           {project.title}
         </h3>
-        <p className="line-clamp-2 text-xs text-black/60 min-[480px]:line-clamp-3 min-[480px]:text-sm">
-          {project.description}
-        </p>
+        {project.description ? (
+          <p className="mt-1 line-clamp-2 text-sm text-white/70 sm:line-clamp-1 sm:text-xs">
+            {project.description}
+          </p>
+        ) : null}
       </div>
     </motion.button>
   );

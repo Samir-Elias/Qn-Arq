@@ -1,11 +1,11 @@
 "use client";
 
 import { Suspense, useState, useMemo } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import type { ProjectWithImages } from "@/lib/types";
 import { PROJECT_CATEGORIES } from "@/lib/types";
 import { FeaturedProject } from "@/components/FeaturedProject";
-import { CategorySection } from "@/components/CategorySection";
+import { ProjectCard } from "@/components/ProjectCard";
 import { ProjectModal } from "@/components/ProjectModal";
 import {
   HERO_CONTAINER,
@@ -16,6 +16,7 @@ import {
   VIEWPORT_CONFIG_HEADER,
   SECTION_REVEAL_VARIANTS,
   VIEWPORT_CONFIG,
+  STAGGER_CONTAINER,
 } from "@/lib/animations";
 
 type HomeContentProps = {
@@ -35,7 +36,6 @@ export function HomeContent({
   const prefersReducedMotion = useReducedMotion();
 
   // Group projects by category, maintaining fixed order
-  // Projects without a category (migration not yet run) fall into "Otros"
   const categorizedProjects = useMemo(() => {
     const grouped = new Map<string, ProjectWithImages[]>();
     for (const cat of PROJECT_CATEGORIES) {
@@ -49,18 +49,18 @@ export function HomeContent({
     return grouped;
   }, [projects]);
 
-  // First category with projects starts expanded
-  const firstCategory = categorizedProjects.keys().next().value;
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set<string>()
+  // Available categories (only those with projects)
+  const availableCategories = useMemo(
+    () => Array.from(categorizedProjects.keys()),
+    [categorizedProjects]
   );
 
-  // Ensure first category is always expanded (even on first render)
-  const effectiveExpanded = useMemo(() => {
-    const set = new Set(expandedCategories);
-    if (firstCategory) set.add(firstCategory);
-    return set;
-  }, [expandedCategories, firstCategory]);
+  // Active tab — first category with projects
+  const [activeCategory, setActiveCategory] = useState<string>(
+    () => availableCategories[0] ?? "Otros"
+  );
+
+  const activeProjects = categorizedProjects.get(activeCategory) ?? [];
 
   const transition = prefersReducedMotion
     ? { duration: 0 }
@@ -76,36 +76,24 @@ export function HomeContent({
     setTimeout(() => setSelectedProject(null), 200);
   };
 
-  const toggleCategory = (category: string) => {
-    setExpandedCategories((prev) => {
-      const next = new Set(prev);
-      if (next.has(category)) {
-        next.delete(category);
-      } else {
-        next.add(category);
-      }
-      return next;
-    });
-  };
-
   return (
     <main className="px-4 pb-24 sm:px-6 lg:px-12">
       {/* Hero */}
-      <section className="pb-20 pt-16 sm:pt-20 lg:pt-28">
+      <section className="pb-5 pt-10 sm:pt-14 lg:pb-5 lg:pt-12">
         <motion.div
-          className="mx-auto max-w-3xl space-y-5 text-center"
+          className="mx-auto max-w-3xl space-y-4 text-center lg:space-y-3"
           variants={HERO_CONTAINER}
           initial="hidden"
           animate="visible"
         >
           <motion.span
-            className="inline-block text-[0.65rem] font-medium uppercase tracking-[0.3em] text-[var(--muted)]"
+            className="inline-block text-[0.65rem] font-medium uppercase tracking-[0.3em] text-[var(--accent)]"
             variants={HERO_ITEM}
           >
             QÑ Arquitectura
           </motion.span>
           <motion.h1
-            className="text-4xl font-light leading-[1.1] sm:text-5xl lg:text-6xl"
+            className="text-3xl font-light leading-[1.1] sm:text-4xl lg:text-5xl"
             variants={HERO_ITEM}
           >
             Espacios que inspiran,{" "}
@@ -122,7 +110,7 @@ export function HomeContent({
 
         {featured ? (
           <motion.div
-            className="mt-12 sm:mt-16"
+            className="mt-8 sm:mt-10 lg:mt-8"
             variants={FEATURED_REVEAL}
             initial="hidden"
             animate="visible"
@@ -134,7 +122,7 @@ export function HomeContent({
 
       {/* Separador */}
       <motion.div
-        className="mx-auto mb-16 h-px w-24 bg-gradient-to-r from-transparent via-[var(--border)] to-transparent"
+        className="mx-auto mb-5 h-px w-24 bg-gradient-to-r from-transparent via-[var(--accent)]/40 to-transparent lg:mb-5"
         variants={SECTION_REVEAL_VARIANTS}
         initial="hidden"
         whileInView="visible"
@@ -142,10 +130,10 @@ export function HomeContent({
         transition={transition}
       />
 
-      {/* Proyectos por categoría */}
+      {/* Proyectos por categoría — tabs horizontales */}
       <section>
         <motion.header
-          className="mb-6 flex items-center justify-between"
+          className="mb-4 flex items-center justify-between"
           variants={HEADER_REVEAL_VARIANTS}
           initial="hidden"
           whileInView="visible"
@@ -158,20 +146,63 @@ export function HomeContent({
           </span>
         </motion.header>
 
-        <div className="rounded-2xl border border-[var(--border)] bg-white px-5 sm:px-6">
-          {Array.from(categorizedProjects.entries()).map(
-            ([category, catProjects]) => (
-              <CategorySection
-                key={category}
-                category={category}
-                projects={catProjects}
-                isExpanded={effectiveExpanded.has(category)}
-                onToggle={() => toggleCategory(category)}
-                onProjectClick={handleOpenProject}
-              />
-            )
-          )}
+        {/* Tab bar */}
+        <div className="mb-5 flex gap-6 overflow-x-auto border-b border-[var(--border)] scrollbar-none">
+          {availableCategories.map((cat) => {
+            const isActive = cat === activeCategory;
+            const count = categorizedProjects.get(cat)?.length ?? 0;
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setActiveCategory(cat)}
+                className={`relative shrink-0 pb-3 text-sm font-medium transition-colors ${
+                  isActive
+                    ? "text-[var(--foreground)]"
+                    : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                }`}
+              >
+                {cat}
+                <span className="ml-1 text-xs tabular-nums opacity-50">
+                  {count}
+                </span>
+                {isActive ? (
+                  <motion.span
+                    layoutId="activeTab"
+                    className="absolute inset-x-0 -bottom-px h-0.5 bg-[var(--accent)]"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                ) : null}
+              </button>
+            );
+          })}
         </div>
+
+        {/* Projects grid — same space, content swaps */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeCategory}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.25 }}
+          >
+            <motion.div
+              className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+              variants={STAGGER_CONTAINER}
+              initial="hidden"
+              animate="visible"
+            >
+              {activeProjects.map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  onClick={handleOpenProject}
+                />
+              ))}
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
       </section>
 
       <Suspense>

@@ -5,6 +5,8 @@
   --foreground: #1f1f1f;
   --muted: #737373;
   --border: #e4e4e4;
+  --accent: #e8722a;
+  --accent-dark: #c75f1f;
 }
 
 html {
