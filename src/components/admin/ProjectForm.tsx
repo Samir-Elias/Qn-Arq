@@ -17,6 +17,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [saved, setSaved] = useState(false);
   const isEditing = !!project;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -30,11 +31,14 @@ export function ProjectForm({ project }: ProjectFormProps) {
       if (isEditing) {
         await updateProject(project.id, formData);
         router.refresh();
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2500);
       } else {
         await createProject(formData);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al guardar");
+    } finally {
       setLoading(false);
     }
   };
@@ -129,6 +133,10 @@ export function ProjectForm({ project }: ProjectFormProps) {
 
       {error ? (
         <p className="text-sm text-red-500">{error}</p>
+      ) : null}
+
+      {saved ? (
+        <p className="text-sm text-emerald-600">Cambios guardados correctamente.</p>
       ) : null}
 
       <div className="flex gap-2">
