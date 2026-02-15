@@ -38,10 +38,10 @@ export const metadata: Metadata = {
     siteName: "QÑ Arquitectura",
     images: [
       {
-        url: "/logo.svg",
-        width: 512,
-        height: 512,
-        alt: "QÑ Arquitectura",
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "QÑ Arquitectura — Arq. Juan Ignacio Flores, Mendoza",
       },
     ],
   },
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     title: "QÑ Arquitectura | Arq. Juan Ignacio Flores",
     description:
       "Arquitectura residencial en Mendoza. Casas, duplex y departamentos con diseño contemporáneo.",
-    images: ["/logo.svg"],
+    images: ["/og-image.png"],
   },
 };
 
@@ -79,7 +79,7 @@ const jsonLd = {
   },
   areaServed: "Mendoza, Argentina",
   url: "https://qn-arquitectura.vercel.app",
-  image: "https://qn-arquitectura.vercel.app/logo.svg",
+  image: "https://qn-arquitectura.vercel.app/og-image.png",
 };
 
 export default function RootLayout({
@@ -100,7 +100,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         {/* PWA / Apple */}
-        <link rel="apple-touch-icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         {/* Structured Data */}
         <script
           type="application/ld+json"
