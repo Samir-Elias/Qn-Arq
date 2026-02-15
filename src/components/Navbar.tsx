@@ -21,7 +21,7 @@ const MENU_VARIANTS = {
 
 const MENU_ITEM = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
 export function Navbar() {
@@ -72,7 +72,7 @@ export function Navbar() {
         }`}
         initial={{ y: 0 }}
         animate={{ y: isVisible || isOpen ? 0 : -100 }}
-        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] as const }}
       >
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-12">
           {/* Logo */}
