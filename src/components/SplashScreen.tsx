@@ -32,7 +32,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
       // Phase 1: Logo entrance — spring scale from 0
       await animate(
         "[data-splash-logo]",
-        { scale: 1, opacity: 1 },
+        { transform: "scale(1)", opacity: 1 },
         { type: "spring", stiffness: 200, damping: 20 }
       );
 
@@ -40,17 +40,17 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
       await Promise.all([
         animate(
           "[data-splash-text]",
-          { opacity: 1, y: 0 },
+          { opacity: 1, transform: "translateY(0px)" },
           { duration: 0.4, ease: "easeOut" }
         ),
         animate(
           "[data-splash-ripple]",
-          { scale: 1.8, opacity: 0 },
+          { transform: "scale(1.8)", opacity: 0 },
           { duration: 0.9, ease: "easeOut" }
         ),
         animate(
           "[data-splash-logo]",
-          { scale: [1, 1.06, 1] },
+          { transform: ["scale(1)", "scale(1.06)", "scale(1)"] },
           { duration: 0.6, ease: "easeInOut" }
         ),
       ]);
@@ -59,7 +59,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
       await Promise.all([
         animate(
           "[data-splash-group]",
-          { y: "-38vh", scale: 0.45 },
+          { transform: "translateY(-38vh) scale(0.45)" },
           { type: "spring", stiffness: 150, damping: 22 }
         ),
         animate(
@@ -111,18 +111,18 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
         data-splash-group
         className="absolute inset-0 flex flex-col items-center justify-center"
       >
-        {/* Ripple ring */}
+        {/* Ripple ring — centered on logo */}
         <div
           data-splash-ripple
           className="absolute w-[100px] h-[100px] rounded-full border border-[var(--accent)] opacity-40 pointer-events-none"
-          style={{ scale: 0.8 }}
+          style={{ transform: "scale(0.8)" }}
         />
 
-        {/* Logo — text-based, same style as navbar */}
+        {/* Logo */}
         <div
           data-splash-logo
-          className="flex items-baseline"
-          style={{ scale: 0, opacity: 0 }}
+          className="flex items-center justify-center"
+          style={{ transform: "scale(0)", opacity: 0 }}
         >
           <span className="text-6xl font-bold tracking-tight text-[var(--foreground)]">
             QÑ
