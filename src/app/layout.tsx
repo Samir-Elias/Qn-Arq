@@ -8,6 +8,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { WhatsAppFAB } from "@/components/WhatsAppFAB";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -117,6 +118,7 @@ export default function RootLayout({
         <WhatsAppFAB />
         <ServiceWorkerRegistrar />
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

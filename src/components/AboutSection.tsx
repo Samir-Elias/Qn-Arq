@@ -56,7 +56,7 @@ export function AboutSection() {
           transition={SCROLL_REVEAL_TRANSITION}
         >
           <Image
-            src="/Sobre Mi/nacha.jpg"
+            src="/Sobre Mi/Nacha.jpg"
             alt="Arq. Juan Ignacio Flores"
             fill
             className="object-cover"
