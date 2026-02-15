@@ -4,6 +4,9 @@ import "./globals.css";
 import { PageTransition } from "@/components/PageTransition";
 import { SplashProvider } from "@/components/SplashProvider";
 import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
+import { WhatsAppFAB } from "@/components/WhatsAppFAB";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -16,9 +19,9 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://qn-arquitectura.vercel.app"),
-  title: "QÑ Arquitectura",
+  title: "QÑ Arquitectura | Arq. Juan Ignacio Flores — Mendoza",
   description:
-    "Estudio de arquitectura especializado en proyectos residenciales y comerciales de alto impacto visual.",
+    "Estudio de arquitectura en Mendoza. Diseño residencial, dirección de obra y remodelaciones. Arq. Juan Ignacio Flores.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -26,9 +29,9 @@ export const metadata: Metadata = {
     title: "QÑ Arquitectura",
   },
   openGraph: {
-    title: "QÑ Arquitectura",
+    title: "QÑ Arquitectura | Arq. Juan Ignacio Flores",
     description:
-      "Proyectos arquitectónicos con enfoque en diseño contemporáneo y experiencias memorables.",
+      "Arquitectura residencial en Mendoza. Casas, duplex y departamentos con diseño contemporáneo.",
     url: "https://qn-arquitectura.vercel.app",
     siteName: "QÑ Arquitectura",
     images: [
@@ -42,9 +45,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "QÑ Arquitectura",
+    title: "QÑ Arquitectura | Arq. Juan Ignacio Flores",
     description:
-      "Proyectos arquitectónicos con enfoque en diseño contemporáneo y experiencias memorables.",
+      "Arquitectura residencial en Mendoza. Casas, duplex y departamentos con diseño contemporáneo.",
     images: ["/logo.svg"],
   },
 };
@@ -56,6 +59,27 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Architect",
+  name: "QÑ Arquitectura",
+  founder: {
+    "@type": "Person",
+    name: "Juan Ignacio Flores",
+    jobTitle: "Arquitecto",
+  },
+  description:
+    "Estudio de arquitectura en Mendoza especializado en diseño residencial, dirección de obra y remodelaciones.",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Mendoza",
+    addressCountry: "AR",
+  },
+  areaServed: "Mendoza, Argentina",
+  url: "https://qn-arquitectura.vercel.app",
+  image: "https://qn-arquitectura.vercel.app/logo.svg",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -64,18 +88,32 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
-        <link rel="dns-prefetch" href="https://lajhpdivbjbvuezxrvdx.supabase.co" />
-        <link rel="preconnect" href="https://lajhpdivbjbvuezxrvdx.supabase.co" crossOrigin="anonymous" />
+        <link
+          rel="dns-prefetch"
+          href="https://lajhpdivbjbvuezxrvdx.supabase.co"
+        />
+        <link
+          rel="preconnect"
+          href="https://lajhpdivbjbvuezxrvdx.supabase.co"
+          crossOrigin="anonymous"
+        />
         {/* PWA / Apple */}
-        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-        <link rel="apple-touch-startup-image" href="/icons/icon-512.png" />
+        <link rel="apple-touch-icon" href="/favicon.ico" />
+        {/* Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body
         className={`${poppins.variable} antialiased bg-background text-foreground`}
       >
         <SplashProvider>
+          <Navbar />
           <PageTransition>{children}</PageTransition>
+          <Footer />
         </SplashProvider>
+        <WhatsAppFAB />
         <ServiceWorkerRegistrar />
       </body>
     </html>

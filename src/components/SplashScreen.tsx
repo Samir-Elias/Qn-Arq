@@ -114,36 +114,28 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
         {/* Ripple ring */}
         <div
           data-splash-ripple
-          className="absolute w-[120px] h-[120px] rounded-full border-2 border-[var(--accent)] opacity-60 pointer-events-none"
+          className="absolute w-[100px] h-[100px] rounded-full border border-[var(--accent)] opacity-40 pointer-events-none"
           style={{ scale: 0.8 }}
         />
 
-        {/* Logo */}
+        {/* Logo — text-based, same style as navbar */}
         <div
           data-splash-logo
-          className="w-[120px] h-[120px] rounded-full overflow-hidden shadow-2xl"
+          className="flex items-baseline"
           style={{ scale: 0, opacity: 0 }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.svg"
-            alt="QN Arquitectura"
-            width={120}
-            height={120}
-            className="w-full h-full object-cover"
-          />
+          <span className="text-6xl font-bold tracking-tight text-[var(--foreground)]">
+            QÑ
+          </span>
         </div>
 
         {/* Brand text */}
         <div
           data-splash-text
-          className="mt-5 flex flex-col items-center gap-0.5"
+          className="mt-3 flex flex-col items-center"
           style={{ opacity: 0, transform: "translateY(10px)" }}
         >
-          <span className="text-2xl font-bold tracking-tight text-[var(--foreground)]">
-            QÑ
-          </span>
-          <span className="text-sm font-light tracking-[0.2em] uppercase text-[var(--muted)]">
+          <span className="text-sm font-light tracking-[0.3em] uppercase text-[var(--muted)]">
             Arquitectura
           </span>
         </div>

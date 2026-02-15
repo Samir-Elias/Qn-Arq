@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://qn-arquitectura.vercel.app/sitemap.xml

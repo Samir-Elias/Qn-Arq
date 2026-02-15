@@ -68,6 +68,15 @@ html.splash-active {
   }
 }
 
+/* Hide scrollbar for tab bars */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /* Touch-friendly targets for mobile */
 @media (pointer: coarse) {
   .touch-target {

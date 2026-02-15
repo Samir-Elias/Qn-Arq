@@ -7,6 +7,7 @@ import { PROJECT_CATEGORIES } from "@/lib/types";
 import { FeaturedProject } from "@/components/FeaturedProject";
 import { ProjectCard } from "@/components/ProjectCard";
 import { ProjectModal } from "@/components/ProjectModal";
+import { AboutSection } from "@/components/AboutSection";
 import {
   HERO_CONTAINER,
   HERO_ITEM,
@@ -77,11 +78,11 @@ export function HomeContent({
   };
 
   return (
-    <main className="px-4 pb-24 sm:px-6 lg:px-12">
-      {/* Hero */}
-      <section className="pb-5 pt-10 sm:pt-14 lg:pb-5 lg:pt-12">
+    <main className="px-4 pb-12 sm:px-6 lg:px-12">
+      {/* Hero — cinematográfico */}
+      <section className="pb-8 pt-20 sm:pt-24 lg:pb-10 lg:pt-28">
         <motion.div
-          className="mx-auto max-w-3xl space-y-4 text-center lg:space-y-3"
+          className="mx-auto max-w-4xl space-y-5 text-center"
           variants={HERO_CONTAINER}
           initial="hidden"
           animate="visible"
@@ -90,27 +91,28 @@ export function HomeContent({
             className="inline-block text-[0.65rem] font-medium uppercase tracking-[0.3em] text-[var(--accent)]"
             variants={HERO_ITEM}
           >
-            QÑ Arquitectura
+            Arq. Juan Ignacio Flores — Mendoza
           </motion.span>
           <motion.h1
-            className="text-3xl font-light leading-[1.1] sm:text-4xl lg:text-5xl"
+            className="text-5xl font-bold uppercase leading-[0.95] tracking-tight sm:text-7xl lg:text-8xl"
             variants={HERO_ITEM}
           >
-            Espacios que inspiran,{" "}
-            <span className="font-semibold">diseños que trascienden</span>
+            Construimos
+            <br />
+            <span className="font-light">ideas</span>
           </motion.h1>
           <motion.p
-            className="mx-auto max-w-lg text-sm leading-relaxed text-[var(--muted)] sm:text-base"
+            className="mx-auto max-w-md text-sm font-light leading-relaxed text-[var(--muted)] sm:text-base"
             variants={HERO_ITEM}
           >
-            Estudio especializado en arquitectura contemporánea con foco en
-            experiencias memorables y materiales nobles.
+            Arquitectura residencial en Mendoza. Cada espacio diseñado para
+            vivirse.
           </motion.p>
         </motion.div>
 
         {featured ? (
           <motion.div
-            className="mt-8 sm:mt-10 lg:mt-8"
+            className="mt-10 sm:mt-12 lg:mt-14"
             variants={FEATURED_REVEAL}
             initial="hidden"
             animate="visible"
@@ -131,7 +133,7 @@ export function HomeContent({
       />
 
       {/* Proyectos por categoría — tabs horizontales */}
-      <section>
+      <section id="proyectos">
         <motion.header
           className="mb-4 flex items-center justify-between"
           variants={HEADER_REVEAL_VARIANTS}
@@ -204,6 +206,9 @@ export function HomeContent({
           </motion.div>
         </AnimatePresence>
       </section>
+
+      {/* Sobre el arquitecto */}
+      <AboutSection />
 
       <Suspense>
         <ProjectModal
