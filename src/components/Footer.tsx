@@ -7,7 +7,7 @@ const NAV_LINKS = [
 ];
 
 const WHATSAPP_NUMBER =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "5492614666991";
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "5492612455281";
 
 export function Footer() {
   return (
@@ -71,7 +71,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://instagram.com"
+                  href="https://instagram.com/arquitectura.qn"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-sm font-light opacity-70 transition-opacity hover:opacity-100 !p-0"

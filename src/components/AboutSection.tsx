@@ -12,7 +12,7 @@ import {
 const VIEWPORT_EAGER = { once: true, amount: 0 as const };
 
 const WHATSAPP_NUMBER =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "5492614666991";
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "5492612455281";
 
 const SERVICES = [
   "Diseño residencial",
@@ -47,7 +47,7 @@ export function AboutSection() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-12">
         {/* Foto del arquitecto */}
         <motion.div
-          className="relative aspect-[4/3] w-full overflow-hidden sm:aspect-[1/1] lg:aspect-[3/4]"
+          className="relative aspect-square w-full overflow-hidden sm:aspect-[4/5] lg:aspect-[3/4]"
           variants={SECTION_REVEAL_VARIANTS}
           initial="hidden"
           whileInView="visible"
@@ -55,7 +55,7 @@ export function AboutSection() {
           transition={SCROLL_REVEAL_TRANSITION}
         >
           <Image
-            src="/projects/project1-1.jpg"
+            src="/Sobre Mi/nacha.jpg"
             alt="Arq. Juan Ignacio Flores"
             fill
             className="object-cover"

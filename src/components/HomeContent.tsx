@@ -80,9 +80,9 @@ export function HomeContent({
   return (
     <main className="px-4 pb-12 sm:px-6 lg:px-12">
       {/* Hero — cinematográfico */}
-      <section className="pb-8 pt-20 sm:pt-24 lg:pb-10 lg:pt-28">
+      <section className="pb-3 pt-16 sm:pt-20 lg:pb-6 lg:pt-24">
         <motion.div
-          className="mx-auto max-w-4xl space-y-5 text-center"
+          className="mx-auto max-w-4xl space-y-3 text-center sm:space-y-5"
           variants={HERO_CONTAINER}
           initial="hidden"
           animate="visible"
@@ -112,7 +112,7 @@ export function HomeContent({
 
         {featured ? (
           <motion.div
-            className="mt-10 sm:mt-12 lg:mt-14"
+            className="mt-6 sm:mt-10 lg:mt-12"
             variants={FEATURED_REVEAL}
             initial="hidden"
             animate="visible"
@@ -124,7 +124,7 @@ export function HomeContent({
 
       {/* Separador */}
       <motion.div
-        className="mx-auto mb-5 h-px w-24 bg-gradient-to-r from-transparent via-[var(--accent)]/40 to-transparent lg:mb-5"
+        className="mx-auto mb-3 h-px w-24 bg-gradient-to-r from-transparent via-[var(--accent)]/40 to-transparent lg:mb-4"
         variants={SECTION_REVEAL_VARIANTS}
         initial="hidden"
         whileInView="visible"
@@ -139,7 +139,7 @@ export function HomeContent({
           variants={HEADER_REVEAL_VARIANTS}
           initial="hidden"
           whileInView="visible"
-          viewport={VIEWPORT_CONFIG_HEADER}
+          viewport={{ once: true, amount: 0 }}
           transition={transition}
         >
           <h2 className="text-xl font-semibold">Proyectos</h2>
