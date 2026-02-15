@@ -34,7 +34,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
       whileTap={{ scale: 0.98 }}
       onClick={() => onClick(project)}
       onMouseEnter={handleMouseEnter}
-      className="group relative w-full overflow-hidden rounded-2xl bg-black text-left"
+      className="group relative w-full overflow-hidden rounded-xl bg-black text-left"
     >
       {/* Image fills the card — 16:10 on mobile, 4:3 on desktop */}
       <div className="relative aspect-[16/10] w-full overflow-hidden sm:aspect-[4/3]">

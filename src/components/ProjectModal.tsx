@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
 import type { ProjectWithImages } from "@/lib/types";
 import { useTrackClick } from "@/hooks/useTrackClick";
+import { trackWhatsAppClick as trackWAVercel, trackGalleryNavigation } from "@/lib/analytics";
 
 const EASE_OUT_EXPO = [0.22, 1, 0.36, 1] as const;
 
@@ -51,14 +52,20 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
     : [];
 
   const handlePrevious = useCallback(() => {
-    setActiveImageIndex(
-      (prev) => (prev - 1 + allImages.length) % allImages.length
-    );
-  }, [allImages.length]);
+    setActiveImageIndex((prev) => {
+      const next = (prev - 1 + allImages.length) % allImages.length;
+      if (project) trackGalleryNavigation(project.title, next);
+      return next;
+    });
+  }, [allImages.length, project]);
 
   const handleNext = useCallback(() => {
-    setActiveImageIndex((prev) => (prev + 1) % allImages.length);
-  }, [allImages.length]);
+    setActiveImageIndex((prev) => {
+      const next = (prev + 1) % allImages.length;
+      if (project) trackGalleryNavigation(project.title, next);
+      return next;
+    });
+  }, [allImages.length, project]);
 
   // Keyboard navigation: arrow keys for carousel
   useEffect(() => {
@@ -89,6 +96,7 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
   );
 
   const handleWhatsAppClick = async () => {
+    trackWAVercel("modal");
     await trackWhatsAppClick(project.id);
     window.open(
       `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`,
@@ -273,7 +281,10 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
                           <motion.button
                             key={image.id}
                             type="button"
-                            onClick={() => setActiveImageIndex(index)}
+                            onClick={() => {
+                              trackGalleryNavigation(project.title, index);
+                              setActiveImageIndex(index);
+                            }}
                             whileTap={{ scale: 0.95 }}
                             className={`relative aspect-square overflow-hidden rounded-md transition ${
                               index === activeImageIndex

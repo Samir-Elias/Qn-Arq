@@ -8,6 +8,7 @@ import { FeaturedProject } from "@/components/FeaturedProject";
 import { ProjectCard } from "@/components/ProjectCard";
 import { ProjectModal } from "@/components/ProjectModal";
 import { AboutSection } from "@/components/AboutSection";
+import { trackProjectView } from "@/lib/analytics";
 import {
   HERO_CONTAINER,
   HERO_ITEM,
@@ -68,6 +69,7 @@ export function HomeContent({
     : SCROLL_REVEAL_TRANSITION;
 
   const handleOpenProject = (project: ProjectWithImages) => {
+    trackProjectView(project.title);
     setSelectedProject(project);
     setModalOpen(true);
   };
@@ -190,7 +192,7 @@ export function HomeContent({
             transition={{ duration: 0.25 }}
           >
             <motion.div
-              className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+              className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
               variants={STAGGER_CONTAINER}
               initial="hidden"
               animate="visible"

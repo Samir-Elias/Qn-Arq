@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { trackWhatsAppClick, trackInstagramClick } from "@/lib/analytics";
 
 const NAV_LINKS = [
   { label: "Proyectos", href: "#proyectos" },
@@ -61,6 +64,7 @@ export function Footer() {
                   href={`https://wa.me/${WHATSAPP_NUMBER}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackWhatsAppClick("footer")}
                   className="flex items-center gap-2 text-sm font-light opacity-70 transition-opacity hover:opacity-100 !p-0"
                 >
                   <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
@@ -74,6 +78,7 @@ export function Footer() {
                   href="https://instagram.com/arquitectura.qn"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackInstagramClick("footer")}
                   className="flex items-center gap-2 text-sm font-light opacity-70 transition-opacity hover:opacity-100 !p-0"
                 >
                   <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">

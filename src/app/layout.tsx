@@ -7,6 +7,7 @@ import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { WhatsAppFAB } from "@/components/WhatsAppFAB";
+import { Analytics } from "@vercel/analytics/react";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -115,6 +116,7 @@ export default function RootLayout({
         </SplashProvider>
         <WhatsAppFAB />
         <ServiceWorkerRegistrar />
+        <Analytics />
       </body>
     </html>
   );

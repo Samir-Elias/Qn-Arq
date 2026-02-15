@@ -8,6 +8,7 @@ import {
   STAGGER_CONTAINER,
   HERO_ITEM,
 } from "@/lib/animations";
+import { trackWhatsAppClick } from "@/lib/analytics";
 
 const VIEWPORT_EAGER = { once: true, amount: 0 as const };
 
@@ -112,6 +113,7 @@ export function AboutSection() {
               href={`https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackWhatsAppClick("about")}
               className="inline-flex items-center gap-2 bg-[var(--foreground)] px-6 py-3 text-sm font-medium text-[var(--background)] transition-opacity hover:opacity-80"
             >
               Contame tu proyecto
