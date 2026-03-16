@@ -8,10 +8,9 @@ import { FeaturedProject } from "@/components/FeaturedProject";
 import { ProjectCard } from "@/components/ProjectCard";
 import { ProjectModal } from "@/components/ProjectModal";
 import { AboutSection } from "@/components/AboutSection";
+import { ScrollVideoHero } from "@/components/ScrollVideoHero";
 import { trackProjectView } from "@/lib/analytics";
 import {
-  HERO_CONTAINER,
-  HERO_ITEM,
   FEATURED_REVEAL,
   SCROLL_REVEAL_TRANSITION,
   HEADER_REVEAL_VARIANTS,
@@ -80,51 +79,29 @@ export function HomeContent({
   };
 
   return (
-    <main className="px-4 pb-12 sm:px-6 lg:px-12">
-      {/* Hero — cinematográfico */}
-      <section className="pb-3 pt-16 sm:pt-20 lg:pb-6 lg:pt-24">
-        <motion.div
-          className="mx-auto max-w-4xl space-y-3 text-center sm:space-y-5"
-          variants={HERO_CONTAINER}
-          initial="hidden"
-          animate="visible"
-        >
-          <motion.span
-            className="inline-block text-[0.65rem] font-medium uppercase tracking-[0.3em] text-[var(--accent)]"
-            variants={HERO_ITEM}
-          >
-            Arq. Juan Ignacio Flores — Mendoza
-          </motion.span>
-          <motion.h1
-            className="text-5xl font-bold uppercase leading-[0.95] tracking-tight sm:text-7xl lg:text-8xl"
-            variants={HERO_ITEM}
-          >
-            Construimos
-            <br />
-            <span className="font-light">ideas</span>
-          </motion.h1>
-          <motion.p
-            className="mx-auto max-w-md text-sm font-light leading-relaxed text-[var(--muted)] sm:text-base"
-            variants={HERO_ITEM}
-          >
-            Arquitectura residencial en Mendoza. Cada espacio diseñado para
-            vivirse.
-          </motion.p>
-        </motion.div>
+    <main className="pb-12">
 
-        {featured ? (
+      {/* 1 — Proyecto principal */}
+      {featured ? (
+        <div className="px-4 sm:px-6 lg:px-12">
           <motion.div
-            className="mt-6 sm:mt-10 lg:mt-12"
+            className="pt-16 sm:pt-20 lg:pt-24"
             variants={FEATURED_REVEAL}
             initial="hidden"
             animate="visible"
           >
             <FeaturedProject project={featured} onOpen={handleOpenProject} />
           </motion.div>
-        ) : null}
-      </section>
+        </div>
+      ) : null}
 
-      {/* Separador */}
+      {/* 2 — Hero scroll-driven */}
+      <div className="mt-10 sm:mt-14 lg:mt-16">
+        <ScrollVideoHero />
+      </div>
+
+      <div className="px-4 sm:px-6 lg:px-12">
+        {/* Separador */}
       <motion.div
         className="mx-auto mb-3 h-px w-24 bg-gradient-to-r from-transparent via-[var(--accent)]/40 to-transparent lg:mb-4"
         variants={SECTION_REVEAL_VARIANTS}
@@ -209,8 +186,9 @@ export function HomeContent({
         </AnimatePresence>
       </section>
 
-      {/* Sobre el arquitecto */}
-      <AboutSection />
+        {/* Sobre el arquitecto */}
+        <AboutSection />
+      </div>
 
       <Suspense>
         <ProjectModal

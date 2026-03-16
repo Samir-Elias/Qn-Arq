@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(export PATH=\"$PATH:/c/Users/andre/AppData/Local/Microsoft/WinGet/Links:/c/Windows/System32/WindowsPowerShell/v1.0\")",
+      "Bash(powershell.exe -Command \"Remove-Item ''''f:/Programacion/qn-arq-app/public/hero-frames/*.jpg''''\")",
+      "Bash(ffmpeg -i \"f:/Programacion/qn-arq-app/public/hero-video/newhero.mp4\" -vf \"fps=30\" -q:v 3 \"f:/Programacion/qn-arq-app/public/hero-frames/frame_%04d.jpg\")",
+      "Bash(export PATH=\"$PATH:/c/Users/andre/AppData/Local/Microsoft/WinGet/Links:/c/Windows/System32/WindowsPowerShell/v1.0:/usr/bin\")",
+      "Bash(powershell.exe -Command \"Remove-Item ''f:/Programacion/qn-arq-app/public/hero-frames/*.jpg''\")",
+      "Bash(export PATH=\"$PATH:/c/Users/andre/AppData/Local/Microsoft/WinGet/Links:/usr/bin\")"
+    ]
+  }
+}
