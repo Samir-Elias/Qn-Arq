@@ -23,12 +23,14 @@ type HomeContentProps = {
   featured: ProjectWithImages | null;
   projects: ProjectWithImages[];
   totalCount: number;
+  isAdmin?: boolean;
 };
 
 export function HomeContent({
   featured,
   projects,
   totalCount,
+  isAdmin = false,
 }: HomeContentProps) {
   const [selectedProject, setSelectedProject] =
     useState<ProjectWithImages | null>(null);
@@ -89,7 +91,7 @@ export function HomeContent({
             initial="hidden"
             animate="visible"
           >
-            <FeaturedProject project={featured} onOpen={handleOpenProject} />
+            <FeaturedProject project={featured} onOpen={handleOpenProject} isAdmin={isAdmin} />
           </motion.div>
         </div>
       ) : null}
@@ -178,6 +180,7 @@ export function HomeContent({
                   key={project.id}
                   project={project}
                   onClick={handleOpenProject}
+                  isAdmin={isAdmin}
                 />
               ))}
             </motion.div>

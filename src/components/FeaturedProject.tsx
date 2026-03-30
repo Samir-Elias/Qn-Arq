@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import type { ProjectWithImages } from "@/lib/types";
@@ -6,9 +7,10 @@ import type { ProjectWithImages } from "@/lib/types";
 type FeaturedProjectProps = {
   project: ProjectWithImages;
   onOpen: (project: ProjectWithImages) => void;
+  isAdmin?: boolean;
 };
 
-export function FeaturedProject({ project, onOpen }: FeaturedProjectProps) {
+export function FeaturedProject({ project, onOpen, isAdmin = false }: FeaturedProjectProps) {
   const cover = project.main_image?.url ?? "/projects/placeholder.png";
   const previewImages = project.priority_images.slice(0, 4);
   const extraCount = Math.max(project.images.length - 5, 0);
@@ -101,6 +103,29 @@ export function FeaturedProject({ project, onOpen }: FeaturedProjectProps) {
           </motion.div>
         </motion.div>
       </motion.button>
+
+      {/* Admin edit button */}
+      {isAdmin ? (
+        <Link
+          href={`/admin/projects/${project.id}`}
+          className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-black shadow backdrop-blur-sm transition-opacity hover:bg-white"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            className="h-3 w-3"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"
+            />
+          </svg>
+          Editar destacado
+        </Link>
+      ) : null}
     </motion.article>
   );
 }
