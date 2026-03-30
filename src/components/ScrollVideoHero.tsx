@@ -42,7 +42,7 @@ export function ScrollVideoHero() {
   const subtextOpacity    = useTransform(scrollYProgress, [0.52, 0.78], [0, 1]);
   const subtextY          = useTransform(scrollYProgress, [0.52, 0.78], [24, 0]);
 
-  // Play once → freeze on last frame → auto-scroll past hero after 3 s
+  // Play once → freeze on last frame
   // isMobile en deps: cuando cambia el src hay que recargar el video
   useEffect(() => {
     const video = videoRef.current;
@@ -55,24 +55,6 @@ export function ScrollVideoHero() {
 
     video.load();               // fuerza la carga del nuevo src
     video.play().catch(() => {});
-
-    const onEnded = () => {
-      setTimeout(() => {
-        const container = containerRef.current;
-        if (!container) return;
-        const heroBottom = container.offsetTop + container.offsetHeight;
-        // Solo auto-scroll si el usuario sigue dentro del hero
-        if (window.scrollY < heroBottom) {
-          window.scrollTo({
-            top: heroBottom,
-            behavior: "smooth",
-          });
-        }
-      }, 3000);
-    };
-
-    video.addEventListener("ended", onEnded);
-    return () => video.removeEventListener("ended", onEnded);
   }, [prefersReducedMotion, isMobile]);
 
   return (
