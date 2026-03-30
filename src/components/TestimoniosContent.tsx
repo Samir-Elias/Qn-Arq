@@ -118,7 +118,7 @@ export function TestimoniosContent() {
 
               {/* Quote text */}
               <p className="flex-1 text-sm font-light leading-relaxed text-[var(--foreground)]">
-                "{t.quote}"
+                &ldquo;{t.quote}&rdquo;
               </p>
 
               {/* Footer */}
