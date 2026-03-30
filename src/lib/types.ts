@@ -12,6 +12,7 @@ export type Project = {
   id: string;
   title: string;
   description: string;
+  notes: string;
   category: ProjectCategory;
   featured: boolean;
   created_at: string;

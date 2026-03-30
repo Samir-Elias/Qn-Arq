@@ -59,91 +59,136 @@ export function ProjectForm({ project }: ProjectFormProps) {
     }
   };
 
+  const inputClass =
+    "w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 text-sm transition-colors focus:border-black focus:outline-none focus:ring-2 focus:ring-black/10 disabled:opacity-50";
+  const labelClass = "block text-sm font-medium mb-1";
+  const hintClass = "mt-1 text-xs text-[var(--muted)]";
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-1">
-        <label htmlFor="title" className="text-sm font-medium">
-          Título
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Título */}
+      <div>
+        <label htmlFor="title" className={labelClass}>
+          Título <span className="text-red-500">*</span>
         </label>
         <input
           id="title"
           name="title"
           type="text"
           required
+          disabled={loading}
           defaultValue={project?.title ?? ""}
-          placeholder="Ej: Casa Moderna en Chacras"
-          className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm focus:border-black focus:outline-none focus:ring-2 focus:ring-black/10"
+          placeholder="Ej: Casa en Chacras de Coria"
+          className={inputClass}
         />
+        <p className={hintClass}>Nombre con el que aparecerá en la web</p>
       </div>
 
-      <div className="space-y-1">
-        <label htmlFor="description" className="text-sm font-medium">
+      {/* Descripción */}
+      <div>
+        <label htmlFor="description" className={labelClass}>
           Descripción
         </label>
         <textarea
           id="description"
           name="description"
-          rows={4}
+          rows={3}
+          disabled={loading}
           defaultValue={project?.description ?? ""}
-          placeholder="Descripción del proyecto..."
-          className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm focus:border-black focus:outline-none focus:ring-2 focus:ring-black/10"
+          placeholder="Describí el proyecto: tipología, superficie, año, características principales..."
+          className={inputClass}
         />
+        <p className={hintClass}>Este texto se muestra en la galería pública</p>
       </div>
 
-      <div className="space-y-1">
-        <label htmlFor="category" className="text-sm font-medium">
-          Tipo de proyecto
+      {/* Notas internas */}
+      <div>
+        <label htmlFor="notes" className={labelClass}>
+          Notas internas
         </label>
-        <select
-          id="category"
-          name="category"
-          defaultValue={project?.category ?? "Otros"}
-          className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm focus:border-black focus:outline-none focus:ring-2 focus:ring-black/10"
-        >
-          {PROJECT_CATEGORIES.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
+        <textarea
+          id="notes"
+          name="notes"
+          rows={3}
+          disabled={loading}
+          defaultValue={project?.notes ?? ""}
+          placeholder="Anotaciones privadas: cliente, estado, materiales, presupuesto..."
+          className={inputClass}
+        />
+        <p className={hintClass}>
+          Solo visible en el admin, no aparece en la web
+        </p>
       </div>
 
-      <div className="flex items-center gap-2">
-        <input
-          id="featured-checkbox"
-          type="checkbox"
-          defaultChecked={project?.featured ?? false}
-          onChange={(e) => {
-            const hidden = e.target.form?.querySelector(
-              'input[name="featured"]'
-            ) as HTMLInputElement;
-            if (hidden) hidden.value = e.target.checked ? "true" : "false";
-          }}
-          className="h-4 w-4 rounded border-[var(--border)]"
-        />
-        <input
-          type="hidden"
-          name="featured"
-          defaultValue={project?.featured ? "true" : "false"}
-        />
-        <label htmlFor="featured-checkbox" className="text-sm">
-          Proyecto destacado
-        </label>
+      {/* Tipo + Destacado */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label htmlFor="category" className={labelClass}>
+            Tipo de proyecto
+          </label>
+          <select
+            id="category"
+            name="category"
+            disabled={loading}
+            defaultValue={project?.category ?? "Otros"}
+            className={inputClass}
+          >
+            {PROJECT_CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col justify-end">
+          <div className="flex items-start gap-3 rounded-lg border border-[var(--border)] px-4 py-3">
+            <input
+              id="featured-checkbox"
+              type="checkbox"
+              disabled={loading}
+              defaultChecked={project?.featured ?? false}
+              onChange={(e) => {
+                const hidden = e.target.form?.querySelector(
+                  'input[name="featured"]'
+                ) as HTMLInputElement;
+                if (hidden)
+                  hidden.value = e.target.checked ? "true" : "false";
+              }}
+              className="mt-0.5 h-4 w-4 cursor-pointer rounded border-[var(--border)]"
+            />
+            <input
+              type="hidden"
+              name="featured"
+              defaultValue={project?.featured ? "true" : "false"}
+            />
+            <div>
+              <label
+                htmlFor="featured-checkbox"
+                className="cursor-pointer text-sm font-medium"
+              >
+                Proyecto destacado
+              </label>
+              <p className="text-xs text-[var(--muted)]">
+                Aparece en la sección principal de la web
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {error ? (
-        <p className="text-sm text-red-500">{error}</p>
-      ) : null}
-
+      {error ? <p className="text-sm text-red-500">{error}</p> : null}
       {saved ? (
-        <p className="text-sm text-emerald-600">Cambios guardados correctamente.</p>
+        <p className="text-sm text-emerald-600">
+          Cambios guardados correctamente.
+        </p>
       ) : null}
 
-      <div className="flex gap-2">
+      <div className="flex items-center gap-3 pt-1">
         <button
           type="submit"
           disabled={loading}
-          className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-black/90 disabled:opacity-50"
+          className="cursor-pointer rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-black/85 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading
             ? "Guardando..."
@@ -157,9 +202,9 @@ export function ProjectForm({ project }: ProjectFormProps) {
             type="button"
             onClick={handleDelete}
             disabled={loading}
-            className="rounded-md border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+            className="cursor-pointer rounded-lg border border-red-200 px-4 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50"
           >
-            Eliminar
+            Eliminar proyecto
           </button>
         ) : null}
       </div>
