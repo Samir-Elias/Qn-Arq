@@ -43,6 +43,7 @@ export function ScrollVideoHero() {
   const subtextY          = useTransform(scrollYProgress, [0.52, 0.78], [24, 0]);
 
   // Play once → freeze on last frame → auto-scroll past hero after 3 s
+  // isMobile en deps: cuando cambia el src hay que recargar el video
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -52,6 +53,7 @@ export function ScrollVideoHero() {
       return;
     }
 
+    video.load();               // fuerza la carga del nuevo src
     video.play().catch(() => {});
 
     const onEnded = () => {
@@ -67,7 +69,7 @@ export function ScrollVideoHero() {
 
     video.addEventListener("ended", onEnded);
     return () => video.removeEventListener("ended", onEnded);
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, isMobile]);
 
   return (
     <div
@@ -77,18 +79,14 @@ export function ScrollVideoHero() {
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#080808]">
 
-        {/* ── Video ───────────────────────────────────────────── */}
+        {/* ── Video — portrait crop para mobile, landscape para desktop ── */}
         <video
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
-          src="/hero-video/newhero.mp4"
+          src={isMobile ? "/hero-video/hero-mobile.mp4" : "/hero-video/hero-web.mp4"}
           muted
           playsInline
           preload="auto"
-          // Sharpening filter to compensate for source quality
-          style={{
-            filter: "contrast(1.12) saturate(1.08) brightness(1.02)",
-          }}
         />
 
         {/* ── Film grain ───────────────────────────────────────── */}

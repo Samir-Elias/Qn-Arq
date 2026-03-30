@@ -48,6 +48,23 @@ export async function getProject(
   return mapProjectWithImages(data);
 }
 
+export async function getProjectsByCategory(
+  category: string
+): Promise<ProjectWithImages[]> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("projects")
+      .select(`*, images:project_images(*)`)
+      .eq("category", category)
+      .order("created_at", { ascending: false });
+    if (error) return [];
+    return (data ?? []).map(mapProjectWithImages);
+  } catch {
+    return [];
+  }
+}
+
 export async function getFeaturedProject(): Promise<ProjectWithImages | null> {
   const supabase = await createClient();
 

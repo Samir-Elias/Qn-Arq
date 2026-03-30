@@ -60,31 +60,45 @@ export function FeaturedProject({ project, onOpen }: FeaturedProjectProps) {
               {project.description}
             </p>
           </header>
-          <div className="flex items-center gap-2">
+          <motion.div
+            className="flex items-end gap-2"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.07, delayChildren: 0.55 } },
+            }}
+          >
             {previewImages.map((image, index) => (
               <motion.div
                 key={image.id}
                 className="relative aspect-[4/3] flex-1 overflow-hidden rounded-lg border border-white/10"
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: 0.3 + 0.1 * index }}
+                variants={{
+                  hidden: { opacity: 0, y: 8 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] as const } },
+                }}
               >
                 <Image
                   src={image.url}
                   alt={`${project.title} preview ${index + 1}`}
                   fill
                   className="object-cover"
-                  sizes="(min-width: 640px) 10vw, 18vw"
+                  sizes="(min-width: 1024px) 14vw, (min-width: 640px) 20vw, 22vw"
                 />
               </motion.div>
             ))}
             {extraCount > 0 ? (
-              <div className="flex flex-1 items-center justify-center text-xs text-white/60">
+              <motion.div
+                className="flex flex-1 items-center justify-center text-xs text-white/60"
+                variants={{
+                  hidden: { opacity: 0 },
+                  visible: { opacity: 1, transition: { duration: 0.3, delay: 0.7 } },
+                }}
+              >
                 +{extraCount}
-              </div>
+              </motion.div>
             ) : null}
-          </div>
+          </motion.div>
         </motion.div>
       </motion.button>
     </motion.article>
