@@ -30,10 +30,10 @@ export function FeaturedProject({ project, onOpen }: FeaturedProjectProps) {
         type="button"
         onClick={() => onOpen(project)}
         whileTap={{ scale: 0.99 }}
-        className="group grid h-full w-full gap-4 p-4 text-left sm:grid-cols-[2fr_3fr] sm:gap-6 sm:p-8"
+        className="group grid h-full w-full gap-4 p-4 text-left sm:grid-cols-[1fr_1fr] sm:gap-6 sm:p-8"
       >
         <motion.div
-          className="relative aspect-[16/10] overflow-hidden rounded-2xl sm:aspect-[4/3]"
+          className="relative aspect-[4/3] overflow-hidden rounded-2xl"
           style={{ y: imageY }}
         >
           <Image
@@ -61,7 +61,7 @@ export function FeaturedProject({ project, onOpen }: FeaturedProjectProps) {
             </p>
           </header>
           <motion.div
-            className="flex items-end gap-2"
+            className="hidden items-end gap-2 sm:flex"
             initial="hidden"
             animate="visible"
             variants={{

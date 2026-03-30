@@ -60,10 +60,14 @@ export function ScrollVideoHero() {
       setTimeout(() => {
         const container = containerRef.current;
         if (!container) return;
-        window.scrollTo({
-          top: container.offsetTop + container.offsetHeight,
-          behavior: "smooth",
-        });
+        const heroBottom = container.offsetTop + container.offsetHeight;
+        // Solo auto-scroll si el usuario sigue dentro del hero
+        if (window.scrollY < heroBottom) {
+          window.scrollTo({
+            top: heroBottom,
+            behavior: "smooth",
+          });
+        }
       }, 3000);
     };
 
