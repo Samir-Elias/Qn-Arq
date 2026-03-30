@@ -1,7 +1,6 @@
 import { getProjects, getFeaturedProject } from "@/lib/data/projects";
 import { createClient } from "@/lib/supabase/server";
 import { HomeContent } from "@/components/HomeContent";
-import { AdminBar } from "@/components/admin/AdminBar";
 
 export const dynamic = "force-dynamic";
 
@@ -22,14 +21,11 @@ export default async function Home() {
   const otherProjects = projects.filter((p) => p.id !== featuredProject?.id);
 
   return (
-    <>
-      <HomeContent
-        featured={featuredProject}
-        projects={otherProjects}
-        totalCount={projects.length}
-        isAdmin={isAdmin}
-      />
-      {isAdmin && <AdminBar />}
-    </>
+    <HomeContent
+      featured={featuredProject}
+      projects={otherProjects}
+      totalCount={projects.length}
+      isAdmin={isAdmin}
+    />
   );
 }

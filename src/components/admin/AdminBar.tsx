@@ -1,7 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
+import { headers } from "next/headers";
 import Link from "next/link";
 
 export async function AdminBar() {
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") ?? "";
+  if (pathname.startsWith("/admin")) return null;
+
   const supabase = await createClient();
   const {
     data: { user },
