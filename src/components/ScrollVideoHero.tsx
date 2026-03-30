@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   useScroll,
   useTransform,
@@ -8,17 +8,9 @@ import {
   useReducedMotion,
 } from "framer-motion";
 
-const FRAME_COUNT = 151;
-
-function padNum(n: number) {
-  return String(n).padStart(4, "0");
-}
-
 export function ScrollVideoHero() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const imagesRef = useRef<HTMLImageElement[]>([]);
-  const currentFrameRef = useRef(0);
+  const videoRef     = useRef<HTMLVideoElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
 
@@ -29,161 +21,143 @@ export function ScrollVideoHero() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  // Compact heights — enough to feel like a reveal, not an endurance test
+  const containerHeight = prefersReducedMotion
+    ? "100vh"
+    : isMobile
+    ? "115vh"
+    : "145vh";
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   });
 
-  const scrollHintOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
-  const textOpacity = useTransform(scrollYProgress, [0.78, 0.96], [0, 1]);
-  const textY = useTransform(scrollYProgress, [0.78, 0.96], [24, 0]);
+  // Compressed animation windows — everything happens in the first ~80% of scroll
+  const scrollHintOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+  const overlayOpacity    = useTransform(scrollYProgress, [0.1, 0.70], [0.0, 0.62]);
+  const eyebrowOpacity    = useTransform(scrollYProgress, [0.35, 0.58], [0, 1]);
+  const textOpacity       = useTransform(scrollYProgress, [0.42, 0.68], [0, 1]);
+  const textY             = useTransform(scrollYProgress, [0.42, 0.68], [40, 0]);
+  const subtextOpacity    = useTransform(scrollYProgress, [0.52, 0.78], [0, 1]);
+  const subtextY          = useTransform(scrollYProgress, [0.52, 0.78], [24, 0]);
 
-  const render = useCallback(
-    (index: number) => {
-      const canvas = canvasRef.current;
-      const img = imagesRef.current[index];
-      if (!canvas || !img?.complete || !img.naturalWidth) return;
-
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      const cw = canvas.width;
-      const ch = canvas.height;
-      const iw = img.naturalWidth;
-      const ih = img.naturalHeight;
-
-      ctx.clearRect(0, 0, cw, ch);
-
-      if (isMobile) {
-        // Mobile: cover — fill viewport, crop sides
-        const scale = Math.max(cw / iw, ch / ih);
-        const sw = cw / scale;
-        const sh = ch / scale;
-        const sx = (iw - sw) / 2;
-        const sy = (ih - sh) / 2;
-        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, cw, ch);
-      } else {
-        // Desktop: no distortion — canvas has same aspect ratio as video
-        ctx.drawImage(img, 0, 0, iw, ih, 0, 0, cw, ch);
-      }
-    },
-    [isMobile],
-  );
-
-  // Preload all frames
+  // Play once → freeze on last frame → auto-scroll past hero after 3 s
   useEffect(() => {
-    const imgs: HTMLImageElement[] = [];
-    for (let i = 0; i < FRAME_COUNT; i++) {
-      const img = new Image();
-      img.src = `/hero-frames/frame_${padNum(i + 1)}.jpg`;
-      img.onload = () => {
-        if (i === 0) render(0);
-      };
-      imgs.push(img);
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (prefersReducedMotion) {
+      video.pause();
+      return;
     }
-    imagesRef.current = imgs;
-  }, [render]);
 
-  // Handle canvas DPI + resize
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    video.play().catch(() => {});
 
-    const setSize = () => {
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = canvas.offsetWidth * dpr;
-      canvas.height = canvas.offsetHeight * dpr;
-      render(currentFrameRef.current);
+    const onEnded = () => {
+      setTimeout(() => {
+        const container = containerRef.current;
+        if (!container) return;
+        window.scrollTo({
+          top: container.offsetTop + container.offsetHeight,
+          behavior: "smooth",
+        });
+      }, 3000);
     };
 
-    const ro = new ResizeObserver(setSize);
-    ro.observe(canvas);
-    setSize();
-    return () => ro.disconnect();
-  }, [render]);
-
-  // If reduced motion: show last frame statically
-  useEffect(() => {
-    if (!prefersReducedMotion) return;
-    const img = new Image();
-    img.src = `/hero-frames/frame_${padNum(FRAME_COUNT)}.jpg`;
-    img.onload = () => {
-      imagesRef.current[FRAME_COUNT - 1] = img;
-      currentFrameRef.current = FRAME_COUNT - 1;
-      render(FRAME_COUNT - 1);
-    };
-    if (img.complete) {
-      currentFrameRef.current = FRAME_COUNT - 1;
-      render(FRAME_COUNT - 1);
-    }
-  }, [prefersReducedMotion, render]);
-
-  // Scroll → frame sync
-  useEffect(() => {
-    if (prefersReducedMotion) return;
-
-    return scrollYProgress.on("change", (v) => {
-      const idx = Math.min(
-        Math.max(Math.round(v * (FRAME_COUNT - 1)), 0),
-        FRAME_COUNT - 1,
-      );
-      if (idx !== currentFrameRef.current) {
-        currentFrameRef.current = idx;
-        render(idx);
-      }
-    });
-  }, [scrollYProgress, prefersReducedMotion, render]);
+    video.addEventListener("ended", onEnded);
+    return () => video.removeEventListener("ended", onEnded);
+  }, [prefersReducedMotion]);
 
   return (
     <div
       ref={containerRef}
       className="relative"
-      style={{ height: prefersReducedMotion ? "100vh" : "220vh" }}
+      style={{ height: containerHeight }}
     >
-      <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden bg-[#f5f2ee]">
-        {/* Canvas — cover en mobile, aspect-ratio exacto en desktop */}
-        <canvas
-          ref={canvasRef}
-          className={
-            isMobile
-              ? "absolute inset-0 h-full w-full"
-              : "w-full"
-          }
-          style={isMobile ? undefined : { aspectRatio: "5 / 3", maxHeight: "100vh" }}
+      <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#080808]">
+
+        {/* ── Video ───────────────────────────────────────────── */}
+        <video
+          ref={videoRef}
+          className="absolute inset-0 h-full w-full object-cover"
+          src="/hero-video/newhero.mp4"
+          muted
+          playsInline
+          preload="auto"
+          // Sharpening filter to compensate for source quality
+          style={{
+            filter: "contrast(1.12) saturate(1.08) brightness(1.02)",
+          }}
         />
 
-        {/* Scroll hint — fades out on first scroll */}
+        {/* ── Film grain ───────────────────────────────────────── */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.055] mix-blend-overlay"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")`,
+            backgroundSize: "180px 180px",
+          }}
+        />
+
+        {/* ── Gradients ────────────────────────────────────────── */}
+        <div className="absolute inset-x-0 bottom-0 h-[72%] bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-black/40 to-transparent" />
+        <div className="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-black/20 to-transparent" />
+
+        {/* ── Dynamic overlay ──────────────────────────────────── */}
+        <motion.div
+          className="absolute inset-0 bg-black"
+          style={{ opacity: overlayOpacity }}
+        />
+
+        {/* ── Scroll hint ──────────────────────────────────────── */}
         <motion.div
           style={{ opacity: scrollHintOpacity }}
-          className="pointer-events-none absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2"
+          className="pointer-events-none absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3"
           aria-hidden="true"
         >
-          <span className="text-[0.6rem] font-medium uppercase tracking-[0.3em] text-[var(--muted)]">
+          <span className="text-[0.5rem] font-semibold uppercase tracking-[0.55em] text-white/40">
             Scroll
           </span>
-          <div className="h-8 w-px animate-pulse bg-[var(--muted)]/40" />
+          <motion.div
+            className="w-px bg-gradient-to-b from-white/50 to-transparent"
+            style={{ height: 44 }}
+            animate={{ scaleY: [1, 0.35, 1], opacity: [0.55, 0.15, 0.55] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+          />
         </motion.div>
 
-        {/* Hero text — appears as animation completes */}
-        <motion.div
-          style={{ opacity: textOpacity, y: textY }}
-          className="pointer-events-none absolute inset-x-0 bottom-0 px-6 pb-12 md:px-12 lg:px-20"
-        >
-          <div className="mx-auto max-w-4xl space-y-3 text-center">
-            <span className="inline-block text-[0.65rem] font-medium uppercase tracking-[0.3em] text-[var(--accent)]">
+        {/* ── Hero copy ────────────────────────────────────────── */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 px-7 pb-14 md:px-14 lg:px-20 xl:px-28">
+
+          <motion.div style={{ opacity: eyebrowOpacity }} className="mb-5 flex items-center gap-3">
+            <span className="h-px w-7 shrink-0 bg-[var(--accent)]" />
+            <span className="text-[0.52rem] font-semibold uppercase tracking-[0.5em] text-[var(--accent)]">
               Arq. Juan Ignacio Flores — Mendoza
             </span>
-            <h1 className="text-5xl font-bold uppercase leading-[0.95] tracking-tight sm:text-7xl lg:text-8xl">
-              Construimos
+          </motion.div>
+
+          <motion.h1
+            style={{ opacity: textOpacity, y: textY, fontSize: "clamp(3.25rem, 10vw, 9rem)" }}
+            className="font-bold uppercase leading-[0.87] tracking-tighter text-white"
+          >
+            Construimos
+            <br />
+            <span className="font-extralight italic tracking-normal text-white/70">
+              ideas
+            </span>
+          </motion.h1>
+
+          <motion.div style={{ opacity: subtextOpacity, y: subtextY }}>
+            <p className="mt-5 max-w-[28ch] text-[0.78rem] font-light leading-[1.9] tracking-wide text-white/45 sm:text-[0.83rem]">
+              Arquitectura residencial en Mendoza.
               <br />
-              <span className="font-light">ideas</span>
-            </h1>
-            <p className="mx-auto max-w-md text-sm font-light leading-relaxed text-[var(--muted)] sm:text-base">
-              Arquitectura residencial en Mendoza. Cada espacio diseñado para
-              vivirse.
+              Cada espacio diseñado para vivirse.
             </p>
-          </div>
-        </motion.div>
+            <div className="mt-6 h-px w-10 bg-[var(--accent)]/50" />
+          </motion.div>
+        </div>
       </div>
     </div>
   );
