@@ -2,76 +2,34 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  HERO_CONTAINER,
-  HERO_ITEM,
-  EASE_OUT_EXPO,
-} from "@/lib/animations";
+import type { FaqItem } from "@/lib/data/content";
+import { ContentEditModal } from "@/components/admin/ContentEditModal";
+import { HERO_CONTAINER, HERO_ITEM, EASE_OUT_EXPO } from "@/lib/animations";
 
-const FAQS = [
-  {
-    id: 1,
-    pregunta: "¿Cuánto cuesta contratar un arquitecto?",
-    respuesta:
-      "Los honorarios varían según el tipo y escala del proyecto. En general se calculan como un porcentaje del costo de obra (entre el 8% y el 15%) o por metro cuadrado diseñado. En la primera consulta te damos un presupuesto claro según tu caso.",
-  },
-  {
-    id: 2,
-    pregunta: "¿Cuánto tarda el proyecto en estar listo?",
-    respuesta:
-      "El anteproyecto toma 2 a 3 semanas. El proyecto ejecutivo completo, con planos y documentación técnica, entre 4 y 6 semanas más. Todo depende de la complejidad del proyecto y la velocidad de aprobación de ajustes.",
-  },
-  {
-    id: 3,
-    pregunta: "¿Trabajás solo en Mendoza?",
-    respuesta:
-      "Principalmente en el Gran Mendoza (Ciudad, Godoy Cruz, Guaymallén, Luján de Cuyo, Maipú, Las Heras). Para proyectos fuera de la provincia evaluamos caso por caso.",
-  },
-  {
-    id: 4,
-    pregunta: "¿Podés hacer solo los planos sin dirigir la obra?",
-    respuesta:
-      "Sí. Ofrecemos el servicio de proyecto (planos y documentación) de forma independiente a la dirección de obra. Muchos clientes contratan solo el proyecto y construyen con su propio contratista.",
-  },
-  {
-    id: 5,
-    pregunta: "¿Qué necesito tener antes de contactarte?",
-    respuesta:
-      "Con la idea y el terreno (o la propiedad existente) alcanza. No hace falta tener nada cerrado. La primera charla sirve justamente para ordenar las ideas y ver qué es posible según tu presupuesto y necesidades.",
-  },
-  {
-    id: 6,
-    pregunta: "¿Hacés remodelaciones y ampliaciones?",
-    respuesta:
-      "Sí. Remodelaciones parciales, reciclados completos y ampliaciones de viviendas existentes. Estos proyectos a veces son más desafiantes que uno nuevo porque hay que trabajar con condicionantes ya construidas.",
-  },
-  {
-    id: 7,
-    pregunta: "¿Cómo sé cuánto me va a costar la obra?",
-    respuesta:
-      "Durante el proyecto elaboramos un presupuesto estimado por metro cuadrado. Una vez terminados los planos ejecutivos, podés pedir cotizaciones formales a contratistas. Podemos ayudarte a interpretar y comparar esos presupuestos.",
-  },
-  {
-    id: 8,
-    pregunta: "¿Trabajás con casas prefabricadas o steel frame?",
-    respuesta:
-      "Sí. Diseñamos para distintos sistemas constructivos: mampostería tradicional, steel frame, hormigón y sistemas mixtos. La elección del sistema depende del presupuesto, el terreno y los tiempos de cada cliente.",
-  },
-];
-
-type FaqItemProps = {
-  faq: (typeof FAQS)[number];
+type FaqContentProps = {
+  faqs: FaqItem[];
+  isAdmin?: boolean;
+  onUpdate?: (id: string, formData: FormData) => Promise<void>;
+  onDelete?: (id: string) => Promise<void>;
 };
 
-function FaqItem({ faq }: FaqItemProps) {
+function FaqItem({
+  faq,
+  isAdmin,
+  onEdit,
+}: {
+  faq: FaqItem;
+  isAdmin: boolean;
+  onEdit: () => void;
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="border-b border-[var(--border)] last:border-b-0">
+    <div className="group relative border-b border-[var(--border)] last:border-b-0">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="group flex w-full items-start justify-between gap-4 py-5 text-left"
+        className="flex w-full items-start justify-between gap-4 py-5 text-left"
       >
         <span className="text-sm font-medium leading-snug sm:text-base">
           {faq.pregunta}
@@ -81,15 +39,7 @@ function FaqItem({ faq }: FaqItemProps) {
           transition={{ duration: 0.2, ease: EASE_OUT_EXPO }}
           className="mt-0.5 shrink-0"
         >
-          <svg
-            className="h-4 w-4 text-[var(--muted)] transition-colors group-hover:text-[var(--foreground)]"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
+          <svg className="h-4 w-4 text-[var(--muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
@@ -111,11 +61,32 @@ function FaqItem({ faq }: FaqItemProps) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Admin edit */}
+      {isAdmin ? (
+        <button
+          type="button"
+          onClick={onEdit}
+          className="absolute right-8 top-4 flex cursor-pointer items-center gap-1 rounded-full bg-black/80 px-2.5 py-1 text-[11px] font-semibold text-white opacity-0 shadow transition-opacity group-hover:opacity-100"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3 w-3">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z" />
+          </svg>
+          Editar
+        </button>
+      ) : null}
     </div>
   );
 }
 
-export function FaqContent() {
+export function FaqContent({
+  faqs,
+  isAdmin = false,
+  onUpdate,
+}: FaqContentProps) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const editing = faqs.find((f) => f.id === editingId);
+
   return (
     <main className="px-4 pb-16 pt-20 sm:px-6 sm:pt-24 lg:px-12">
       <div className="mx-auto max-w-3xl">
@@ -154,8 +125,13 @@ export function FaqContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          {FAQS.map((faq) => (
-            <FaqItem key={faq.id} faq={faq} />
+          {faqs.map((faq) => (
+            <FaqItem
+              key={faq.id}
+              faq={faq}
+              isAdmin={isAdmin}
+              onEdit={() => setEditingId(faq.id)}
+            />
           ))}
         </motion.div>
 
@@ -167,13 +143,9 @@ export function FaqContent() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <p className="text-xs font-medium uppercase tracking-[0.2em] opacity-50">
-            ¿No encontrás lo que buscás?
-          </p>
+          <p className="text-xs font-medium uppercase tracking-[0.2em] opacity-50">¿No encontrás lo que buscás?</p>
           <p className="mt-2 text-xl font-semibold">Escribime directamente</p>
-          <p className="mt-1 text-sm font-light opacity-60">
-            Cualquier consulta que tengas, sin compromiso.
-          </p>
+          <p className="mt-1 text-sm font-light opacity-60">Cualquier consulta que tengas, sin compromiso.</p>
           <a
             href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "5492612455281"}`}
             target="_blank"
@@ -187,6 +159,19 @@ export function FaqContent() {
           </a>
         </motion.div>
       </div>
+
+      {/* Edit modal */}
+      {editing && onUpdate ? (
+        <ContentEditModal
+          title="Editar pregunta"
+          fields={[
+            { name: "pregunta", label: "Pregunta", type: "text", value: editing.pregunta },
+            { name: "respuesta", label: "Respuesta", type: "textarea", rows: 5, value: editing.respuesta },
+          ]}
+          onSave={(formData) => onUpdate(editing.id, formData)}
+          onClose={() => setEditingId(null)}
+        />
+      ) : null}
     </main>
   );
 }

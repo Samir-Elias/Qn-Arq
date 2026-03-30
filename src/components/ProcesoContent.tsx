@@ -1,53 +1,32 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
+import type { PasoProceso } from "@/lib/data/content";
+import { ContentEditModal } from "@/components/admin/ContentEditModal";
 import {
   HERO_CONTAINER,
   HERO_ITEM,
   SCROLL_REVEAL_TRANSITION,
 } from "@/lib/animations";
 
-const PASOS = [
-  {
-    numero: "01",
-    titulo: "Primera consulta",
-    descripcion:
-      "Nos juntamos (presencial o por video) para que me cuentes tu idea, el terreno o la propiedad, y lo que necesitás. Sin costo y sin compromiso.",
-    duracion: "1 reunión",
-  },
-  {
-    numero: "02",
-    titulo: "Anteproyecto",
-    descripcion:
-      "Desarrollamos la propuesta inicial: plantas, volumetría y materialidad. Acá es donde la idea toma forma visual por primera vez. Se ajusta hasta que esté exactamente como querés.",
-    duracion: "2–3 semanas",
-  },
-  {
-    numero: "03",
-    titulo: "Proyecto ejecutivo",
-    descripcion:
-      "Con el anteproyecto aprobado, generamos la documentación técnica completa: planos de arquitectura, cortes, elevaciones, detalles constructivos y memoria descriptiva.",
-    duracion: "4–6 semanas",
-  },
-  {
-    numero: "04",
-    titulo: "Gestión municipal",
-    descripcion:
-      "Tramitamos los permisos y aprobaciones municipales necesarios. Coordinamos con el municipio y resolvemos los requisitos administrativos.",
-    duracion: "Variable según municipio",
-  },
-  {
-    numero: "05",
-    titulo: "Dirección de obra",
-    descripcion:
-      "Durante la construcción supervisamos que todo se ejecute conforme al proyecto. Visitas periódicas a obra, coordinación con contratistas y resolución de imprevistos.",
-    duracion: "Duración de la obra",
-  },
-];
+type ProcesoContentProps = {
+  pasos: PasoProceso[];
+  isAdmin?: boolean;
+  onUpdatePaso?: (id: string, formData: FormData) => Promise<void>;
+  onDeletePaso?: (id: string) => Promise<void>;
+};
 
 const VIEWPORT = { once: true, amount: 0.2 } as const;
 
-export function ProcesoContent() {
+export function ProcesoContent({
+  pasos,
+  isAdmin = false,
+  onUpdatePaso,
+}: ProcesoContentProps) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const editingPaso = pasos.find((p) => p.id === editingId);
+
   return (
     <main className="px-4 pb-16 pt-20 sm:px-6 sm:pt-24 lg:px-12">
       <div className="mx-auto max-w-4xl">
@@ -82,14 +61,12 @@ export function ProcesoContent() {
 
         {/* Steps */}
         <div className="relative">
-          {/* Vertical line */}
-          <div className="absolute left-[1.85rem] top-0 bottom-0 w-px bg-[var(--border)] sm:left-[2.35rem]" />
-
+          <div className="absolute bottom-0 left-[1.85rem] top-0 w-px bg-[var(--border)] sm:left-[2.35rem]" />
           <div className="space-y-0">
-            {PASOS.map((paso, index) => (
+            {pasos.map((paso, index) => (
               <motion.div
-                key={paso.numero}
-                className="relative flex gap-6 sm:gap-10"
+                key={paso.id}
+                className="group relative flex gap-6 sm:gap-10"
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={VIEWPORT}
@@ -114,6 +91,20 @@ export function ProcesoContent() {
                     {paso.descripcion}
                   </p>
                 </div>
+
+                {/* Admin edit button */}
+                {isAdmin && onUpdatePaso ? (
+                  <button
+                    type="button"
+                    onClick={() => setEditingId(paso.id)}
+                    className="absolute right-0 top-4 flex cursor-pointer items-center gap-1.5 rounded-full bg-black/80 px-3 py-1.5 text-xs font-semibold text-white opacity-0 shadow backdrop-blur-sm transition-opacity group-hover:opacity-100"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3 w-3">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z" />
+                    </svg>
+                    Editar
+                  </button>
+                ) : null}
               </motion.div>
             ))}
           </div>
@@ -127,9 +118,7 @@ export function ProcesoContent() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <p className="text-sm font-light text-[var(--muted)]">
-            ¿Listo para empezar?
-          </p>
+          <p className="text-sm font-light text-[var(--muted)]">¿Listo para empezar?</p>
           <a
             href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "5492612455281"}`}
             target="_blank"
@@ -143,6 +132,20 @@ export function ProcesoContent() {
           </a>
         </motion.div>
       </div>
+
+      {/* Edit modal */}
+      {editingPaso && onUpdatePaso ? (
+        <ContentEditModal
+          title={`Editar paso ${editingPaso.numero}`}
+          fields={[
+            { name: "titulo", label: "Título", type: "text", value: editingPaso.titulo },
+            { name: "duracion", label: "Duración", type: "text", value: editingPaso.duracion },
+            { name: "descripcion", label: "Descripción", type: "textarea", rows: 5, value: editingPaso.descripcion },
+          ]}
+          onSave={(formData) => onUpdatePaso(editingPaso.id, formData)}
+          onClose={() => setEditingId(null)}
+        />
+      ) : null}
     </main>
   );
 }

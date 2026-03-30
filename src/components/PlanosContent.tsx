@@ -16,9 +16,10 @@ import {
 
 type PlanosContentProps = {
   projects: ProjectWithImages[];
+  isAdmin?: boolean;
 };
 
-export function PlanosContent({ projects }: PlanosContentProps) {
+export function PlanosContent({ projects, isAdmin = false }: PlanosContentProps) {
   const [selectedProject, setSelectedProject] =
     useState<ProjectWithImages | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -94,6 +95,7 @@ export function PlanosContent({ projects }: PlanosContentProps) {
                 key={project.id}
                 project={project}
                 onClick={handleOpenProject}
+                isAdmin={isAdmin}
               />
             ))}
           </motion.div>

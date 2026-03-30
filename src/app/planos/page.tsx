@@ -1,3 +1,4 @@
+import { createClient } from "@/lib/supabase/server";
 import { getProjectsByCategory } from "@/lib/data/projects";
 import { PlanosContent } from "@/components/PlanosContent";
 
@@ -10,7 +11,11 @@ export const metadata = {
 };
 
 export default async function PlanosPage() {
-  const planos = await getProjectsByCategory("Planos");
+  const supabase = await createClient();
+  const [{ data: { user } }, planos] = await Promise.all([
+    supabase.auth.getUser(),
+    getProjectsByCategory("Planos"),
+  ]);
 
-  return <PlanosContent projects={planos} />;
+  return <PlanosContent projects={planos} isAdmin={!!user} />;
 }
